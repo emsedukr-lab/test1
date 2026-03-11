@@ -1,0 +1,85 @@
+# 민감 정보 / 보안
+.ssh/
+.gnupg/
+.aws/
+.config/
+.claude/
+.claude.json
+.claude.json.backup
+.codex/
+.chatgpt/
+.gemini/
+.cursor/
+.vscode/
+
+# 시스템 / 캐시
+.DS_Store
+.Trash/
+.cache/
+.local/
+.npm/
+.npm-global/
+.cargo/
+.rustup/
+.docker/
+.ollama/
+.lmstudio/
+.lmstudio-home-pointer
+.matplotlib/
+.streamlit/
+.idlerc/
+
+# 개인 파일
+.zsh_history
+.zsh_sessions/
+.zprofile
+.zshenv
+.zshrc
+.profile
+.gitconfig
+.npmrc
+
+# 한국 보안 프로그램 / 인증서
+.npki_pkcs11.cnf
+.delfino.conf
+.nuuid.ini
+.MJKJDeviceGUID
+.MJKJRegInfo_*
+.softforum/
+.wizvera/
+.cagent/
+.antigravity/
+.openclaw/
+.AnySign4PC/
+.CrossWeb/
+.INNORIX/
+Innorixet
+.kkirikkiri/
+
+# 대용량 / 불필요 폴더
+Applications/
+"Applications (Parallels)/"
+Library/
+Music/
+Movies/
+Pictures/
+Parallels/
+Downloads/
+"Calibre Library/"
+"Creative Cloud Files*"
+Keychron_Screen/
+PPTX/
+PRD/
+
+# 프로젝트 내 제외
+node_modules/
+dist/
+*.log
+nohup.out
+*.env
+.env
+.env.*
+
+# 기타
+snippets.xml
+*.hwpx
