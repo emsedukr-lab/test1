@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+/* 디자인 토큰 — 딥 네이비 기반, 뮤트 골드 강조 (다크 단일 테마) */
+:root {
+  --background: #0e1226;
+  --surface: #1a2038;
+  --surface-raised: #232a4a;
+  --border: #323a5e;
+  --foreground: #f4f1e8;
+  --muted: #b8bdd4;
+  --gold: #d4af6a;
+  --gold-strong: #e5c684;
+  --rose: #e08a9b;
+  --blue: #7ba3e0;
+  --purple: #a98ee0;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border-subtle: var(--border);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-gold: var(--gold);
+  --color-gold-strong: var(--gold-strong);
+  --color-rose: var(--rose);
+  --color-blue-cat: var(--blue);
+  --color-purple-cat: var(--purple);
+  --font-sans: var(--font-noto-sans-kr), "Apple SD Gothic Neo", sans-serif;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* 카드 플립 (CSS 전용, 모션 감소 대응) */
+.flip {
+  perspective: 1000px;
+}
+.flip-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 500ms ease;
+}
+.flip.is-revealed .flip-inner {
+  transform: rotateY(180deg);
+}
+.flip-face {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+}
+.flip-front {
+  transform: rotateY(180deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .flip-inner {
+    transition: none;
+  }
+}
+
+/* 포커스 표시 유지 (접근성) */
+:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
+}
+
+/* 스크린리더 전용 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
