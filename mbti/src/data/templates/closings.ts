@@ -47,4 +47,29 @@ export const CLOSINGS: readonly TemplateVariant<ClosingContext>[] = [
     render: (c) =>
       `며칠 뒤, ${josa(c.keyword, "이/가")} 오늘과 어떻게 달라 보이는지 다시 들여다봐도 좋겠습니다.`,
   },
+  {
+    id: "closing-07",
+    endingGroup: "gwaenchanta",
+    toneTags: ["gentle", "hold"],
+    render: (c) =>
+      `리딩이 남긴 단어들을 다 짊어질 필요는 없습니다. ${c.keyword} 하나만 주머니에 넣어 가도 괜찮습니다.`,
+  },
+  {
+    id: "closing-08",
+    endingGroup: "eungwon",
+    render: (c) =>
+      `오늘의 ${josa(c.cardNameKo, "은/는")} 여기서 인사를 건넵니다. 남은 걸음은 ${c.contextNoun}의 몫이고, 카드는 그 걸음을 조용히 응원하는 쪽입니다.`,
+  },
+  {
+    id: "closing-09",
+    endingGroup: "ganeung",
+    render: (c) =>
+      `${josa(c.keyword, "이/가")} 하루 중 문득 떠오르는 순간이 있다면, 그때가 카드를 곱씹기 가장 좋은 때일 수 있습니다.`,
+  },
+  {
+    id: "closing-10",
+    endingGroup: "manhada",
+    render: (c) =>
+      `오늘의 리딩은 ${josa(c.cardNameKo, "과/와")} ${c.keyword}, 두 단어로 접어 ${c.contextNoun} 한켠에 놓아둘 만합니다.`,
+  },
 ];

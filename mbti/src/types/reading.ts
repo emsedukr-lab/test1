@@ -63,6 +63,8 @@ export interface ReadingInput {
   question?: string;
   /** UI 셔플 결과, 스프레드 위치 순서대로 */
   drawnCardIds: readonly string[];
+  /** 위치별 역방향 여부 — 생략 시 전부 정방향 */
+  reversedFlags?: readonly boolean[];
 }
 
 // ---------- 안전 필터 ----------
@@ -82,6 +84,8 @@ export interface CardReadingSection {
   cardNameKo: string;
   positionTitle: string;
   mode: InterpretationMode;
+  /** 역방향 여부 */
+  reversed: boolean;
   /** UI 제목 — 예: '현재 상황 — 컵 3' */
   headline: string;
   /** 조립된 본문 1~2문단 */
@@ -113,6 +117,7 @@ export interface ReadingResult {
     spreadId: SpreadId;
     mbti: MbtiType | null;
     cardIds: readonly string[];
+    reversedFlags: readonly boolean[];
     /** 디버깅·재현용 */
     seed: number;
   };
@@ -149,4 +154,6 @@ export interface ReadingRecord {
   question: string;
   spreadId: SpreadId;
   cardIds: readonly string[];
+  /** 역방향 여부 (구버전 기록에는 없을 수 있음 — 생략 시 전부 정방향) */
+  reversedFlags?: readonly boolean[];
 }

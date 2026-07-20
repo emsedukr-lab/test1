@@ -8,7 +8,9 @@ import "./globals.css";
 const notoSansKr = Noto_Sans_KR({
   variable: "--font-noto-sans-kr",
   subsets: ["latin"],
-  weight: ["400", "500", "700"],
+  // 500(medium)은 400으로 폴백 — 한글 서브셋 용량 절감 (LCP 개선)
+  weight: ["400", "700"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {

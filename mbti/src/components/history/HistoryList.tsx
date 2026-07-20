@@ -18,6 +18,7 @@ function recordToResult(record: ReadingRecord): ReadingResult | null {
       mbti: record.mbti,
       question: record.question || undefined,
       drawnCardIds: record.cardIds,
+      reversedFlags: record.reversedFlags,
     });
   } catch {
     return null;

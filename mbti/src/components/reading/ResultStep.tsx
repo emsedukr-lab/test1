@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { StepGuard } from "@/components/wizard/StepGuard";
 import { ReadingResultView } from "@/components/reading/ReadingResultView";
 import { AdSlot } from "@/components/ads/AdSlot";
@@ -13,7 +13,8 @@ import { getTopic } from "@/data/topics";
 import { SPREADS } from "@/data/spreads";
 import type { ReadingRecord, ReadingResult } from "@/types/reading";
 import { useHistoryStore } from "@/stores/historyStore";
-import { selectDrawnCardIds, useReadingStore } from "@/stores/readingStore";
+import { selectDrawnCardIds, selectReversedFlags, useReadingStore } from "@/stores/readingStore";
+import { track } from "@/lib/analytics";
 
 export function ResultStep() {
   return (
@@ -47,7 +48,9 @@ function ResultBody() {
   const [notice, setNotice] = useState<string | null>(null);
 
   const cardIds = selectDrawnCardIds(state);
+  const reversedFlags = selectReversedFlags(state);
   const cardIdsKey = cardIds.join(",");
+  const reversedKey = reversedFlags.map((f) => (f ? "1" : "0")).join("");
 
   const result: ReadingResult | null = useMemo(() => {
     if (!state.topicId || !state.spreadId || cardIdsKey === "") return null;
@@ -58,11 +61,23 @@ function ResultBody() {
         mbti: state.mbti,
         question: state.question || undefined,
         drawnCardIds: cardIdsKey.split(","),
+        reversedFlags: reversedKey.split("").map((c) => c === "1"),
       });
     } catch {
       return null;
     }
-  }, [state.topicId, state.spreadId, state.mbti, state.question, cardIdsKey]);
+  }, [state.topicId, state.spreadId, state.mbti, state.question, cardIdsKey, reversedKey]);
+
+  useEffect(() => {
+    if (result && result.safety.action !== "block") {
+      track("result_viewed", {
+        topic: result.meta.topicId,
+        spread: result.meta.spreadId,
+        mbti: result.meta.mbti ?? "none",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result?.meta.seed]);
 
   if (!result) {
     return (
@@ -90,18 +105,22 @@ function ResultBody() {
       question: state.question,
       spreadId: state.spreadId,
       cardIds,
+      reversedFlags,
     };
     addRecord(record);
+    track("result_saved", { topic: state.topicId, spread: state.spreadId });
     setNotice("기록에 저장했습니다.");
   };
 
   const handleShare = async () => {
     if (!state.topicId || !state.spreadId) return;
+    track("result_shared", { topic: state.topicId, spread: state.spreadId });
     const payload = encodeShare({
       mbti: state.mbti,
       topicId: state.topicId,
       spreadId: state.spreadId,
       cardIds,
+      reversedFlags,
     });
     const url = `${window.location.origin}/r?d=${payload}`;
     const title = `${state.mbti ? `${state.mbti}를 위한 ` : ""}${topic?.nameKo ?? ""} ${spread?.nameKo ?? ""} — ${SITE_NAME}`;

@@ -20,7 +20,8 @@ export function ConsentBanner() {
     >
       <div className="mx-auto flex max-w-2xl flex-col gap-3">
         <p className="text-sm text-muted">
-          이 서비스는 무료 제공을 위해 광고를 사용합니다. 맞춤 광고 쿠키 사용에 동의하시겠어요?{" "}
+          이 서비스는 무료 제공을 위해 광고를 사용합니다. 맞춤 광고와 방문 통계 쿠키 사용에
+          동의하시겠어요?{" "}
           <Link href="/cookie-policy" className="underline text-gold">
             쿠키 정책 보기
           </Link>

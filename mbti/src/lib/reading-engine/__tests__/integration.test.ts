@@ -100,6 +100,29 @@ describe("generateReading — 통합", () => {
     expect(dupes).toEqual([]);
   });
 
+  it("역방향 카드는 다르게 해석되고 헤드라인에 표시된다", () => {
+    const upright = generateReading(base);
+    const reversed = generateReading({ ...base, reversedFlags: [true, false, false] });
+
+    expect(reversed.cardSections[0].reversed).toBe(true);
+    expect(reversed.cardSections[0].headline).toContain("(역방향)");
+    expect(reversed.cardSections[1].reversed).toBe(false);
+    // 같은 카드라도 역방향이면 본문이 달라진다
+    expect(reversed.cardSections[0].paragraphs.join()).not.toBe(
+      upright.cardSections[0].paragraphs.join(),
+    );
+    // 역방향도 결정적이다
+    expect(reversed).toEqual(generateReading({ ...base, reversedFlags: [true, false, false] }));
+    // 금지 표현 없음
+    for (const text of allText(reversed)) {
+      expect(findForbidden(text), text).toEqual([]);
+    }
+  });
+
+  it("역방향 플래그 수가 카드 수와 다르면 검증 오류", () => {
+    expect(() => generateReading({ ...base, reversedFlags: [true] })).toThrow();
+  });
+
   it("위기 질문이면 리딩을 생성하지 않고 안내만 반환한다", () => {
     const result = generateReading({ ...base, question: "죽고 싶다는 생각이 들어요" });
     expect(result.safety.action).toBe("block");

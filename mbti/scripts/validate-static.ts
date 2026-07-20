@@ -9,6 +9,7 @@ import { CLOSINGS } from "../src/data/templates/closings";
 import { MBTI_BRIDGES } from "../src/data/templates/mbti-bridges";
 import { OPENINGS } from "../src/data/templates/openings";
 import { POSITION_FRAMES } from "../src/data/templates/position-frames";
+import { RECOVERY_FRAMES, REVERSAL_FRAMES } from "../src/data/templates/reversal-frames";
 import { SAFETY_MESSAGES } from "../src/data/templates/safety-messages";
 import { findForbidden } from "../src/lib/content-rules";
 
@@ -89,6 +90,10 @@ for (const [mode, pool] of Object.entries(POSITION_FRAMES)) {
 }
 for (const v of MBTI_BRIDGES) checkRendered(`MBTI_BRIDGES.${v.id}`, v.render(dummyBridge));
 if (MBTI_BRIDGES.length < 5) errors.push(`MBTI_BRIDGES: variant ${MBTI_BRIDGES.length}개 (최소 5개)`);
+for (const v of REVERSAL_FRAMES) checkRendered(`REVERSAL_FRAMES.${v.id}`, v.render(dummyCtx));
+if (REVERSAL_FRAMES.length < 4) errors.push(`REVERSAL_FRAMES: ${REVERSAL_FRAMES.length}개 (최소 4개)`);
+for (const v of RECOVERY_FRAMES) checkRendered(`RECOVERY_FRAMES.${v.id}`, v.render(dummyCtx));
+if (RECOVERY_FRAMES.length < 3) errors.push(`RECOVERY_FRAMES: ${RECOVERY_FRAMES.length}개 (최소 3개)`);
 for (const v of OPENINGS) checkRendered(`OPENINGS.${v.id}`, v.render(dummyOpening));
 for (const v of CLOSINGS) checkRendered(`CLOSINGS.${v.id}`, v.render(dummyClosing));
 for (const [kind, pool] of Object.entries(COMBINATION_FRAMES)) {

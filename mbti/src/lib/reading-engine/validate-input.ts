@@ -37,6 +37,12 @@ export function validateReadingInput(input: ReadingInput): ValidationResult {
     );
   }
 
+  if (input.reversedFlags && input.reversedFlags.length !== input.drawnCardIds.length) {
+    errors.push(
+      `역방향 플래그 수 불일치: ${input.reversedFlags.length}개 (카드 ${input.drawnCardIds.length}장)`,
+    );
+  }
+
   const seen = new Set<string>();
   const cards: TarotCard[] = [];
   for (const id of input.drawnCardIds) {

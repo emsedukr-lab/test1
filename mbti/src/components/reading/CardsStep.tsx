@@ -9,6 +9,7 @@ import { DECK_SIZE } from "@/lib/deck";
 import { SPREADS } from "@/data/spreads";
 import { useStoreHydrated } from "@/stores/hydration";
 import { useReadingStore } from "@/stores/readingStore";
+import { track } from "@/lib/analytics";
 
 export function CardsStep() {
   const router = useRouter();
@@ -90,7 +91,10 @@ export function CardsStep() {
           <button
             type="button"
             disabled={!done}
-            onClick={() => router.push("/reading/reveal")}
+            onClick={() => {
+              track("cards_selected", { count: required });
+              router.push("/reading/reveal");
+            }}
             className="flex-1 rounded-xl bg-gold px-4 py-3 text-sm font-bold text-background disabled:opacity-40"
           >
             {done ? "카드 공개하기" : `${required - selectedIndices.length}장 더 선택`}

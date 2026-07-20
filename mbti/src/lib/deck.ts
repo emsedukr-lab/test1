@@ -17,3 +17,10 @@ export function shuffleDeck(): string[] {
 }
 
 export const DECK_SIZE = 78;
+
+/** 덱 인덱스별 역방향 여부 — 셔플 시 1회 생성, '역방향 포함' 설정일 때만 적용 */
+export function shuffleOrientations(): boolean[] {
+  const randoms = new Uint8Array(DECK_SIZE);
+  crypto.getRandomValues(randoms);
+  return Array.from(randoms, (v) => v % 2 === 1);
+}

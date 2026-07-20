@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { CardBackFace, CardBackSprite } from "@/components/cards/CardBackSprite";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { MBTI_TYPES } from "@/types/mbti";
 import { SITE_DESCRIPTION, SITE_NAME, SITE_TAGLINE, SITE_URL } from "@/lib/site";
@@ -19,7 +20,13 @@ export default function HomePage() {
       />
 
       <section className="py-10 text-center">
-        <h1 className="text-3xl font-bold leading-snug">
+        <CardBackSprite />
+        <div aria-hidden="true" className="mb-6 flex items-end justify-center">
+          <CardBackFace className="w-16 -rotate-12 opacity-60 sm:w-20" />
+          <CardBackFace className="z-10 w-20 -translate-y-2 sm:w-24" />
+          <CardBackFace className="w-16 rotate-12 opacity-60 sm:w-20" />
+        </div>
+        <h1 className="text-3xl font-bold leading-snug sm:text-4xl">
           내 MBTI에 맞는
           <br />
           <span className="text-gold-strong">타로 한 장</span>

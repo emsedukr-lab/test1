@@ -82,12 +82,15 @@ export function ReadingResultView({
                     alt={card.imageAlt}
                     width={60}
                     height={100}
-                    className="w-14 shrink-0 rounded border border-gold/30"
+                    className={`w-14 shrink-0 rounded border border-gold/30 ${
+                      section.reversed ? "rotate-180" : ""
+                    }`}
                   />
                 )}
                 <div>
                   <p className={`text-xs font-medium ${MODE_COLOR[section.mode]}`}>
                     {MODE_LABEL[section.mode]}의 자리
+                    {section.reversed && <span className="ml-1.5 text-rose">· 역방향</span>}
                   </p>
                   <h3 className="text-base font-bold">{section.headline}</h3>
                 </div>

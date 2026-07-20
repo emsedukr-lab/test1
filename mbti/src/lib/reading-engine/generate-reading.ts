@@ -30,7 +30,13 @@ export function generateReading(input: ReadingInput): ReadingResult {
 
   const safety = checkQuestionSafety(input.question);
 
-  const seedParts = [spread.id, topic.id, input.mbti ?? "NONE", ...input.drawnCardIds];
+  const reversedFlags = input.reversedFlags ?? input.drawnCardIds.map(() => false);
+  const seedParts = [
+    spread.id,
+    topic.id,
+    input.mbti ?? "NONE",
+    ...input.drawnCardIds.map((id, i) => (reversedFlags[i] ? `${id}r` : id)),
+  ];
   const seed = seedOf(seedParts);
 
   // 위기 신호: 리딩을 생성하지 않고 안내만 반환
@@ -41,6 +47,7 @@ export function generateReading(input: ReadingInput): ReadingResult {
         spreadId: spread.id,
         mbti: input.mbti,
         cardIds: input.drawnCardIds,
+        reversedFlags,
         seed,
       },
       safety,
@@ -69,6 +76,7 @@ export function generateReading(input: ReadingInput): ReadingResult {
       meaning: meanings[i],
       position: spread.positions[i],
       topic,
+      reversed: reversedFlags[i],
       rng,
       registry,
       toneRules: profile?.toneRules ?? null,
@@ -106,6 +114,7 @@ export function generateReading(input: ReadingInput): ReadingResult {
     registry,
     seed,
     cardIds: input.drawnCardIds,
+    reversedFlags,
     mbti: input.mbti,
   });
 }

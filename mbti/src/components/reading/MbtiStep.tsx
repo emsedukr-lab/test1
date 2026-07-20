@@ -6,6 +6,7 @@ import { MBTI_PROFILES } from "@/data/mbti";
 import type { MbtiGroup, MbtiType } from "@/types/mbti";
 import { MBTI_GROUP_NAMES, MBTI_GROUPS } from "@/types/mbti";
 import { useReadingStore } from "@/stores/readingStore";
+import { track } from "@/lib/analytics";
 
 const GROUP_ORDER: readonly MbtiGroup[] = ["analyst", "diplomat", "sentinel", "explorer"];
 
@@ -16,6 +17,7 @@ export function MbtiStep() {
 
   const choose = (type: MbtiType | null, skipped = false) => {
     setMbti(type, skipped);
+    track("mbti_selected", { mbti: type ?? "none" });
     router.push("/reading/topic");
   };
 

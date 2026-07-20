@@ -55,4 +55,43 @@ export const MBTI_BRIDGES: readonly TemplateVariant<BridgeContext>[] = [
     render: (c) =>
       `${josa(c.traitNoun, "을/를")} 가진 ${c.type}이라면 ${josa(c.keyword, "을/를")} 작은 단계로 쪼개는 것부터 시작해볼 수 있습니다.`,
   },
+  {
+    id: "bridge-07",
+    endingGroup: "heureum",
+    render: (c) =>
+      `${josa(c.keyword, "은/는")} ${c.type}에게 낯선 언어가 아닙니다. 평소의 ${josa(c.traitNoun, "이/가")} 그대로 통할 수 있는 흐름입니다.`,
+  },
+  {
+    id: "bridge-08",
+    endingGroup: "moreunda",
+    toneTags: ["gentle", "hold"],
+    render: (c) =>
+      `${c.type} 성향은 이런 ${c.contextNoun} 앞에서 ${josa(c.overuseNoun, "을/를")} 먼저 꺼내들기 쉽습니다. 이번에는 익숙한 그 방식을 한 박자 늦춰보는 것도 방법일지 모릅니다.`,
+  },
+  {
+    id: "bridge-09",
+    endingGroup: "boinda",
+    render: (c) =>
+      `카드가 짚는 ${josa(c.keyword, "과/와")} ${c.type}의 ${josa(c.traitNoun, "이/가")} 같은 방향을 향하고 있습니다. 둘을 겹쳐 읽으면 그림이 더 넓어 보입니다.`,
+  },
+  {
+    id: "bridge-10",
+    endingGroup: "sigi",
+    toneTags: ["stepByStep", "push"],
+    render: (c) =>
+      `${josa(c.traitNoun, "은/는")} ${c.type} 성향이 이미 손에 쥔 도구입니다. 그 도구를 ${c.keyword} 쪽으로 실제로 꺼내볼 시기입니다.`,
+  },
+  {
+    id: "bridge-11",
+    endingGroup: "ttaemun",
+    toneTags: ["logic"],
+    render: (c) =>
+      `이 카드가 ${c.type}에게 특히 크게 들리는 이유가 있습니다. ${josa(c.overuseNoun, "과/와")} ${josa(c.keyword, "이/가")} 서로 반대편에서 마주 보고 있기 때문입니다.`,
+  },
+  {
+    id: "bridge-12",
+    endingGroup: "gwaenchanta",
+    render: (c) =>
+      `${josa(c.traitNoun, "이라는/라는")} 밑천이 있으니, ${c.contextNoun} 앞에서 ${josa(c.keyword, "을/를")} 겁내지 않아도 괜찮습니다.`,
+  },
 ];

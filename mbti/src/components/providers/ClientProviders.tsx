@@ -6,6 +6,7 @@ import { useHistoryStore } from "@/stores/historyStore";
 import { useReadingStore } from "@/stores/readingStore";
 import { ConsentBanner } from "@/components/ads/ConsentBanner";
 import { AdScriptLoader } from "@/components/ads/AdScriptLoader";
+import { AnalyticsLoader } from "@/components/ads/AnalyticsLoader";
 
 /**
  * persist 스토어 rehydrate 트리거 — skipHydration: true 스토어들을
@@ -23,6 +24,7 @@ export function ClientProviders({ children }: { children: React.ReactNode }) {
       {children}
       <ConsentBanner />
       <AdScriptLoader />
+      <AnalyticsLoader />
     </>
   );
 }

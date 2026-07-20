@@ -8,11 +8,17 @@ const payload: SharePayload = {
   topicId: "career-path",
   spreadId: "three-card",
   cardIds: ["major-00", "swords-09", "wands-06"],
+  reversedFlags: [false, false, false],
 };
 
 describe("share — 공유 페이로드", () => {
   it("인코딩·디코딩 왕복이 보존된다", () => {
     expect(decodeShare(encodeShare(payload))).toEqual(payload);
+  });
+
+  it("역방향 플래그도 왕복된다", () => {
+    const p = { ...payload, reversedFlags: [true, false, true] };
+    expect(decodeShare(encodeShare(p))).toEqual(p);
   });
 
   it("MBTI 미선택도 왕복된다", () => {
@@ -32,7 +38,7 @@ describe("share — 공유 페이로드", () => {
   });
 
   it("카드 수가 스프레드와 안 맞으면 null", () => {
-    const bad = { ...payload, cardIds: ["major-00"] };
+    const bad = { ...payload, cardIds: ["major-00"], reversedFlags: [false] };
     expect(decodeShare(encodeShare(bad))).toBeNull();
   });
 

@@ -58,6 +58,7 @@ export function assembleReading(parts: {
   registry: UsedSentenceRegistry;
   seed: number;
   cardIds: readonly string[];
+  reversedFlags: readonly boolean[];
   mbti: MbtiProfile["type"] | null;
 }): ReadingResult {
   const {
@@ -75,6 +76,7 @@ export function assembleReading(parts: {
     registry,
     seed,
     cardIds,
+    reversedFlags,
     mbti,
   } = parts;
 
@@ -90,13 +92,15 @@ export function assembleReading(parts: {
   const cardSections: CardReadingSection[] = sections.map((section, i) => {
     const card = cards[i];
     const position = spread.positions[i];
+    const reversed = reversedFlags[i];
     const para2 = section.bridge ? `${section.modifier} ${section.bridge}` : section.modifier;
     return {
       cardId: card.id,
       cardNameKo: card.nameKo,
       positionTitle: position.titleKo,
       mode: position.interpretationMode,
-      headline: `${position.titleKo} — ${card.nameKo}`,
+      reversed,
+      headline: `${position.titleKo} — ${card.nameKo}${reversed ? " (역방향)" : ""}`,
       paragraphs: [`${section.frame} ${section.body}`, para2],
     };
   });
@@ -109,7 +113,7 @@ export function assembleReading(parts: {
   const closing = pickVariant(CLOSINGS, closingCtx, rng, registry);
 
   return {
-    meta: { topicId: topic.id, spreadId: spread.id, mbti, cardIds, seed },
+    meta: { topicId: topic.id, spreadId: spread.id, mbti, cardIds, reversedFlags, seed },
     safety,
     opening,
     mbtiLens,

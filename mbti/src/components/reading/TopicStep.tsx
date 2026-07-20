@@ -6,6 +6,7 @@ import { StepGuard } from "@/components/wizard/StepGuard";
 import { ALL_TOPICS, getTopic } from "@/data/topics";
 import { QUESTION_MAX_LENGTH } from "@/types/reading";
 import { useReadingStore } from "@/stores/readingStore";
+import { track } from "@/lib/analytics";
 
 export function TopicStep() {
   const router = useRouter();
@@ -92,7 +93,10 @@ export function TopicStep() {
         <button
           type="button"
           disabled={!topicId}
-          onClick={() => router.push("/reading/spread")}
+          onClick={() => {
+            if (topicId) track("topic_selected", { topic: topicId });
+            router.push("/reading/spread");
+          }}
           className="flex-1 rounded-xl bg-gold px-4 py-3 text-sm font-bold text-background disabled:opacity-40"
         >
           다음 — 리딩 방식 선택

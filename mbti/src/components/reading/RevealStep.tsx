@@ -7,7 +7,7 @@ import { CardBackFace, CardBackSprite } from "@/components/cards/CardBackSprite"
 import { StepGuard } from "@/components/wizard/StepGuard";
 import { getCardById } from "@/data/cards";
 import { SPREADS } from "@/data/spreads";
-import { selectDrawnCardIds, useReadingStore } from "@/stores/readingStore";
+import { selectDrawnCardIds, selectReversedFlags, useReadingStore } from "@/stores/readingStore";
 
 export function RevealStep() {
   const router = useRouter();
@@ -18,8 +18,12 @@ export function RevealStep() {
   const revealNext = useReadingStore((s) => s.revealNext);
   const revealAll = useReadingStore((s) => s.revealAll);
 
+  const orientations = useReadingStore((s) => s.orientations);
+  const includeReversed = useReadingStore((s) => s.includeReversed);
+
   const spread = spreadId ? SPREADS[spreadId] : null;
   const cardIds = selectDrawnCardIds({ deckOrder, selectedIndices });
+  const reversedFlags = selectReversedFlags({ selectedIndices, orientations, includeReversed });
   const allRevealed = revealedCount >= cardIds.length && cardIds.length > 0;
 
   const lastRevealed =
@@ -45,6 +49,7 @@ export function RevealStep() {
           const card = getCardById(cardId);
           const isRevealed = i < revealedCount;
           const position = spread?.positions[i];
+          const reversed = reversedFlags[i];
           if (!card || !position) return null;
           return (
             <div key={cardId} className="text-center">
@@ -54,7 +59,7 @@ export function RevealStep() {
                 onClick={revealNext}
                 aria-label={
                   isRevealed
-                    ? `${position.titleKo}: ${card.nameKo}`
+                    ? `${position.titleKo}: ${card.nameKo}${reversed ? " 역방향" : ""}`
                     : `${position.titleKo} 자리 카드 공개하기`
                 }
                 className={`flip block w-full ${isRevealed ? "is-revealed" : ""} ${
@@ -71,14 +76,19 @@ export function RevealStep() {
                       alt={card.imageAlt}
                       width={120}
                       height={200}
-                      className="h-full w-full object-cover"
+                      className={`h-full w-full object-cover ${reversed ? "rotate-180" : ""}`}
                       priority={i === 0}
                     />
                   </div>
                 </div>
               </button>
               <p className="mt-1.5 text-xs text-muted">{position.titleKo}</p>
-              {isRevealed && <p className="text-xs font-bold text-gold-strong">{card.nameKo}</p>}
+              {isRevealed && (
+                <p className="text-xs font-bold text-gold-strong">
+                  {card.nameKo}
+                  {reversed && <span className="ml-1 font-medium text-rose">역방향</span>}
+                </p>
+              )}
             </div>
           );
         })}

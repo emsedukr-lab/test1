@@ -1,7 +1,25 @@
 "use client";
 
-import { memo, useCallback, useRef, useState } from "react";
+import { memo, useCallback, useRef, useState, useSyncExternalStore } from "react";
 import { CardBackFace, CardBackSprite } from "./CardBackSprite";
+
+const DESKTOP_QUERY = "(min-width: 768px)";
+
+function subscribeDesktop(onStoreChange: () => void) {
+  const mq = window.matchMedia(DESKTOP_QUERY);
+  mq.addEventListener("change", onStoreChange);
+  return () => mq.removeEventListener("change", onStoreChange);
+}
+
+/** 화면 폭에 따른 그리드 열 수 — 키보드 위/아래 이동 계산과 동기화된다 */
+function useGridColumns(): number {
+  const isDesktop = useSyncExternalStore(
+    subscribeDesktop,
+    () => window.matchMedia(DESKTOP_QUERY).matches,
+    () => false,
+  );
+  return isDesktop ? 13 : 6;
+}
 
 interface CardButtonProps {
   deckIndex: number;
@@ -53,20 +71,15 @@ interface CardGridProps {
   selectedIndices: readonly number[];
   requiredCount: number;
   onToggle: (deckIndex: number) => void;
-  columns?: number;
 }
 
 /**
  * 78장 뒷면 카드 그리드 — listbox 시맨틱 + roving tabindex.
  * 화살표로 이동, Enter/Space로 선택·해제, Home/End로 처음·끝.
+ * 모바일 6열, 데스크톱 13열(78 = 13×6).
  */
-export function CardGrid({
-  deckSize,
-  selectedIndices,
-  requiredCount,
-  onToggle,
-  columns = 6,
-}: CardGridProps) {
+export function CardGrid({ deckSize, selectedIndices, requiredCount, onToggle }: CardGridProps) {
+  const columns = useGridColumns();
   const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   const selectedSet = new Set(selectedIndices);

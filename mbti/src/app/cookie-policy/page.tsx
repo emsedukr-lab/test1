@@ -31,12 +31,15 @@ export default function CookiePolicyPage() {
       </section>
 
       <section className="mt-8">
-        <h2 className="text-lg font-bold text-gold-strong">광고 쿠키</h2>
+        <h2 className="text-lg font-bold text-gold-strong">광고·통계 쿠키</h2>
         <p className="mt-2 text-sm leading-relaxed text-muted">
-          서비스는 무료 운영을 위해 광고(Google AdSense)를 게재합니다. 광고 스크립트는
-          이용자가 배너에서 동의를 선택한 경우에만 로드되며, 이때 광고 제공자가 맞춤 광고를
-          위한 쿠키를 사용할 수 있습니다. 동의하지 않으면 광고 스크립트가 로드되지 않고,
-          서비스의 모든 기능은 동의 여부와 관계없이 동일하게 이용할 수 있습니다.
+          서비스는 무료 운영을 위해 광고(Google AdSense)를 게재하고, 서비스 개선을 위해 방문
+          통계(Google Analytics)를 수집할 수 있습니다. 두 스크립트 모두 이용자가 배너에서
+          동의를 선택한 경우에만 로드되며, 이때 제공자가 맞춤 광고·통계를 위한 쿠키를 사용할
+          수 있습니다. 방문 통계에는 어떤 화면을 이용했는지 정도만 담기며, 이용자가 입력한
+          질문 내용은 어떤 경우에도 수집하지 않습니다. 동의하지 않으면 두 스크립트 모두
+          로드되지 않고, 서비스의 모든 기능은 동의 여부와 관계없이 동일하게 이용할 수
+          있습니다.
         </p>
       </section>
 

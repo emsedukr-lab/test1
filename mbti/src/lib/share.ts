@@ -29,6 +29,8 @@ export interface SharePayload {
   topicId: TopicId;
   spreadId: SpreadId;
   cardIds: string[];
+  /** 위치별 역방향 여부 — 카드 id 뒤 'r' 접미사로 인코딩 */
+  reversedFlags: boolean[];
 }
 
 function toBase64Url(s: string): string {
@@ -47,11 +49,15 @@ function fromBase64Url(s: string): string | null {
 
 /**
  * 공유 페이로드 인코딩 — 질문 원문은 구조적으로 포함될 수 없다.
- * 형식: `1|{mbti|-}|{topicId}|{spreadId}|{cardId.cardId...}`
+ * 형식: `1|{mbti|-}|{topicId}|{spreadId}|{cardId[r].cardId[r]...}`
+ * (역방향 카드는 id 뒤에 'r' 접미사)
  */
 export function encodeShare(payload: SharePayload): string {
   const mbtiPart = payload.mbti ?? "-";
-  const raw = ["1", mbtiPart, payload.topicId, payload.spreadId, payload.cardIds.join(".")].join("|");
+  const cardsPart = payload.cardIds
+    .map((id, i) => (payload.reversedFlags[i] ? `${id}r` : id))
+    .join(".");
+  const raw = ["1", mbtiPart, payload.topicId, payload.spreadId, cardsPart].join("|");
   return toBase64Url(raw);
 }
 
@@ -68,8 +74,10 @@ export function decodeShare(encoded: string): SharePayload | null {
   const expectedCount = SPREAD_CARD_COUNT[spreadId];
   if (!expectedCount) return null;
 
-  const cardIds = cardsPart.split(".");
-  if (cardIds.length !== expectedCount) return null;
+  const tokens = cardsPart.split(".");
+  if (tokens.length !== expectedCount) return null;
+  const reversedFlags = tokens.map((t) => t.endsWith("r"));
+  const cardIds = tokens.map((t) => (t.endsWith("r") ? t.slice(0, -1) : t));
   const validIds = new Set(ALL_CARD_IDS);
   if (cardIds.some((id) => !validIds.has(id))) return null;
   if (new Set(cardIds).size !== cardIds.length) return null;
@@ -79,6 +87,7 @@ export function decodeShare(encoded: string): SharePayload | null {
     topicId: topicId as TopicId,
     spreadId: spreadId as SpreadId,
     cardIds,
+    reversedFlags,
   };
 }
 

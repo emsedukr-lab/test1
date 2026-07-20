@@ -22,6 +22,7 @@ export function SharedReading() {
         spreadId: payload.spreadId,
         mbti: payload.mbti,
         drawnCardIds: payload.cardIds,
+        reversedFlags: payload.reversedFlags,
       });
     } catch {
       return null;

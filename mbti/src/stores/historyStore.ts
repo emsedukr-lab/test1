@@ -19,7 +19,10 @@ export function isValidRecord(r: unknown): r is ReadingRecord {
     typeof record.question === "string" &&
     typeof record.spreadId === "string" &&
     Array.isArray(record.cardIds) &&
-    record.cardIds.every((c) => typeof c === "string")
+    record.cardIds.every((c) => typeof c === "string") &&
+    (record.reversedFlags === undefined ||
+      (Array.isArray(record.reversedFlags) &&
+        record.reversedFlags.every((f) => typeof f === "boolean")))
   );
 }
 

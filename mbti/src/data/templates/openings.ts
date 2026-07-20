@@ -43,4 +43,36 @@ export const OPENINGS: readonly TemplateVariant<OpeningContext>[] = [
     render: (c) =>
       `지금의 ${c.contextNoun} 위로 ${josa(c.firstKeyword, "이라는/라는")} 단어가 떠올랐습니다. 오늘 리딩은 여기서 출발하는 것이 좋아 보입니다.`,
   },
+  {
+    id: "opening-06",
+    endingGroup: "bonda",
+    render: (c) =>
+      `${josa(c.topicNameKo, "을/를")} 두고 카드를 펼쳤습니다. 가장 먼저 눈에 들어오는 단어, ${c.firstKeyword}부터 차근차근 살펴봅니다.`,
+  },
+  {
+    id: "opening-07",
+    endingGroup: "heureum",
+    toneTags: ["bigPicture"],
+    render: (c) =>
+      `${c.cardCount}장의 배열이 한 호흡으로 완성됐습니다. ${josa(c.firstKeyword, "이/가")} 문을 열고 ${josa(c.lastKeyword, "이/가")} 마무리를 맡는 흐름입니다.`,
+  },
+  {
+    id: "opening-08",
+    endingGroup: "myeongsa",
+    render: (c) =>
+      `질문을 한 꺼풀 벗기면 결국 ${c.contextNoun}의 이야기입니다. 카드가 첫머리에 올려둔 답은 ${c.firstKeyword}입니다.`,
+  },
+  {
+    id: "opening-09",
+    endingGroup: "ganeung",
+    render: (c) =>
+      `${josa(c.topicNameKo, "이라는/라는")} 주제 앞에서 카드들이 ${josa(c.firstKeyword, "을/를")} 먼저 내밀었습니다. 여기에 지금 필요한 단서가 담겨 있을 수 있습니다.`,
+  },
+  {
+    id: "opening-10",
+    endingGroup: "manhada",
+    toneTags: ["gentle", "stepByStep"],
+    render: (c) =>
+      `이번 출발점은 ${c.firstKeyword}입니다. ${josa(c.contextNoun, "이/가")} 복잡하게 느껴질수록, 이렇게 단순한 한 단어에서 시작해볼 만합니다.`,
+  },
 ];

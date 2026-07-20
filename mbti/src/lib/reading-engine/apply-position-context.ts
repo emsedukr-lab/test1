@@ -1,4 +1,5 @@
 import { POSITION_FRAMES } from "@/data/templates/position-frames";
+import { RECOVERY_FRAMES, REVERSAL_FRAMES } from "@/data/templates/reversal-frames";
 import type { ToneRules } from "@/types/mbti";
 import type { SpreadPosition, Topic } from "@/types/reading";
 import type { TarotCard } from "@/types/tarot";
@@ -22,11 +23,12 @@ export function applyPositionContext(args: {
   meaning: SelectedMeaning;
   position: SpreadPosition;
   topic: Topic;
+  reversed: boolean;
   rng: Rng;
   registry: UsedSentenceRegistry;
   toneRules?: ToneRules | null;
 }): PositionedMeaning {
-  const { card, meaning, position, topic, rng, registry, toneRules } = args;
+  const { card, meaning, position, topic, reversed, rng, registry, toneRules } = args;
 
   const ctx: TemplateContext = {
     cardNameKo: card.nameKo,
@@ -36,6 +38,18 @@ export function applyPositionContext(args: {
     contextNoun: rng.pick(topic.contextNouns),
     roleDescription: position.roleDescription,
   };
+
+  // 역방향: 에너지의 부족/과잉/내면화/막힘 프레임 + 그림자 의미,
+  // 이어서 본래 에너지(빛의 의미)를 회복 관점으로 제시한다.
+  if (reversed) {
+    const frame = pickVariant(REVERSAL_FRAMES, ctx, rng, registry, toneRules);
+    const recovery = pickVariant(RECOVERY_FRAMES, ctx, rng, registry, toneRules);
+    return {
+      frame,
+      body: meaning.shadow,
+      modifier: `${recovery} ${meaning.light}`,
+    };
+  }
 
   const frame = pickVariant(POSITION_FRAMES[position.interpretationMode], ctx, rng, registry, toneRules);
 

@@ -5,18 +5,22 @@ import { StepGuard } from "@/components/wizard/StepGuard";
 import { SPREADS } from "@/data/spreads";
 import { getTopic } from "@/data/topics";
 import { useReadingStore } from "@/stores/readingStore";
+import { track } from "@/lib/analytics";
 
 export function SpreadStep() {
   const router = useRouter();
   const topicId = useReadingStore((s) => s.topicId);
   const spreadId = useReadingStore((s) => s.spreadId);
+  const includeReversed = useReadingStore((s) => s.includeReversed);
   const setSpread = useReadingStore((s) => s.setSpread);
+  const setIncludeReversed = useReadingStore((s) => s.setIncludeReversed);
   const ensureShuffled = useReadingStore((s) => s.ensureShuffled);
 
   const topic = topicId ? getTopic(topicId) : null;
   const available = topic ? topic.allowedSpreads.map((id) => SPREADS[id]) : [];
 
   const next = () => {
+    if (spreadId) track("spread_selected", { spread: spreadId, reversed: includeReversed ? 1 : 0 });
     ensureShuffled();
     router.push("/reading/cards");
   };
@@ -57,6 +61,22 @@ export function SpreadStep() {
           );
         })}
       </div>
+
+      <label className="mt-6 flex cursor-pointer items-start gap-3 rounded-xl border border-border-subtle bg-surface p-4">
+        <input
+          type="checkbox"
+          checked={includeReversed}
+          onChange={(e) => setIncludeReversed(e.target.checked)}
+          className="mt-0.5 h-4 w-4 accent-[var(--gold)]"
+        />
+        <span>
+          <span className="block text-sm font-medium">역방향 카드 포함</span>
+          <span className="mt-0.5 block text-xs leading-relaxed text-muted">
+            카드가 거꾸로 나올 수 있어요. 역방향은 불운이 아니라 그 에너지가 부족하거나, 과하거나,
+            안으로 향해 있다는 신호로 해석합니다.
+          </span>
+        </span>
+      </label>
 
       <div className="mt-8 flex gap-2">
         <button
