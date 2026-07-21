@@ -10,10 +10,18 @@ export async function dismissConsent(page: Page) {
   }
 }
 
-/** 카드 그리드에서 앞에서부터 n장 클릭 */
+/**
+ * 부채꼴에서 카드 n장 선택.
+ * 카드가 서로 겹쳐 중심점이 가려지므로 프로그램적 click으로 정확한 카드를 지정한다
+ * (사람은 hover 팝업/탭한 지점의 최상단 카드로 선택 — 뒷면이라 어느 카드든 무방).
+ */
+export async function pickCard(page: Page, deckIndex: number) {
+  await page.getByTestId(`card-${deckIndex}`).evaluate((el) => (el as HTMLButtonElement).click());
+}
+
 export async function pickCards(page: Page, count: number, startIndex = 0) {
   for (let i = 0; i < count; i++) {
-    await page.getByTestId(`card-${startIndex + i * 3}`).click();
+    await pickCard(page, startIndex + i * 3);
   }
 }
 
