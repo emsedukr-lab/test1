@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { LiveRegion } from "@/components/a11y/LiveRegion";
-import { CardGrid } from "@/components/cards/CardGrid";
+import { CardRibbon } from "@/components/cards/CardRibbon";
 import { StepGuard } from "@/components/wizard/StepGuard";
 import { DECK_SIZE } from "@/lib/deck";
 import { SPREADS } from "@/data/spreads";
@@ -69,8 +69,8 @@ export function CardsStep() {
           </div>
         </div>
       ) : (
-        <div className="mt-4">
-          <CardGrid
+        <div className="mt-4 -mx-4">
+          <CardRibbon
             deckSize={DECK_SIZE}
             selectedIndices={selectedIndices}
             requiredCount={required}
