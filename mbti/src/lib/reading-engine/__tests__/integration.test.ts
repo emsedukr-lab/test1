@@ -15,12 +15,16 @@ const base: ReadingInput = {
 
 function allText(result: ReadingResult): string[] {
   return [
+    result.verdict?.text ?? "",
     result.opening,
-    result.mbtiLens ?? "",
-    ...result.cardSections.flatMap((s) => [...s.paragraphs]),
+    result.mbtiBriefing?.approach ?? "",
+    result.mbtiBriefing?.focusCard.reason ?? "",
+    result.mbtiBriefing?.pitfall ?? "",
+    ...result.cardSections.flatMap((s) => [s.essence, s.intro, s.main, s.mbtiView ?? ""]),
     ...result.combinationInsights.map((c) => c.body),
     ...result.strengthsHighlight,
     ...result.cautionsHighlight,
+    result.actionsIntro ?? "",
     ...result.actions,
     ...result.reflectionQuestions,
     result.closing,
@@ -42,6 +46,9 @@ describe("generateReading — 통합", () => {
     const a = generateReading(base);
     const b = generateReading({ ...base, mbti: "ESTJ" });
     expect(allText(a).join()).not.toBe(allText(b).join());
+    // 유형 브리핑은 유형 고유 정보를 담는다
+    expect(a.mbtiBriefing?.type).toBe("INFP");
+    expect(b.mbtiBriefing?.type).toBe("ESTJ");
   });
 
   it("분야가 다르면 해석이 달라진다", () => {
@@ -68,16 +75,32 @@ describe("generateReading — 통합", () => {
     expect(result.combinationInsights.length).toBeLessThanOrEqual(2);
     expect(result.opening.trim()).not.toBe("");
     expect(result.closing.trim()).not.toBe("");
-    expect(result.mbtiLens).not.toBeNull();
+    // verdict
+    expect(result.verdict).not.toBeNull();
+    expect(result.verdict!.text.trim()).not.toBe("");
+    expect(result.verdict!.keywords).toHaveLength(3);
+    expect(result.verdict!.firstStep).toBe(result.actions[0]);
+    // 유형 브리핑 + 모든 섹션에 MBTI 시선
+    expect(result.mbtiBriefing).not.toBeNull();
+    expect(result.mbtiBriefing!.focusCard.cardId).toMatch(/^(major|wands|cups|swords|pentacles)-/);
+    expect(result.actionsIntro).toContain("INFP");
+    for (const s of result.cardSections) {
+      expect(s.mbtiView, s.cardId).not.toBeNull();
+      expect(s.essence).toContain(s.keyword);
+      expect(s.intro.trim()).not.toBe("");
+      expect(s.main.trim()).not.toBe("");
+    }
   });
 
-  it("MBTI 미선택이면 mbtiLens가 null이고 리딩은 정상 생성된다", () => {
+  it("MBTI 미선택이면 브리핑·시선·인트로가 모두 null이고 리딩은 정상 생성된다", () => {
     const result = generateReading({ ...base, mbti: null });
-    expect(result.mbtiLens).toBeNull();
+    expect(result.mbtiBriefing).toBeNull();
+    expect(result.actionsIntro).toBeNull();
     expect(result.cardSections).toHaveLength(3);
-    // 브리지 문장에 유형 코드가 없어야 함
+    for (const s of result.cardSections) expect(s.mbtiView).toBeNull();
+    expect(result.verdict).not.toBeNull();
     for (const text of allText(result)) {
-      expect(text).not.toMatch(/[EI][SN][TF][JP] 성향/);
+      expect(text).not.toMatch(/[EI][SN][TF][JP]/);
     }
   });
 
@@ -108,9 +131,7 @@ describe("generateReading — 통합", () => {
     expect(reversed.cardSections[0].headline).toContain("(역방향)");
     expect(reversed.cardSections[1].reversed).toBe(false);
     // 같은 카드라도 역방향이면 본문이 달라진다
-    expect(reversed.cardSections[0].paragraphs.join()).not.toBe(
-      upright.cardSections[0].paragraphs.join(),
-    );
+    expect(reversed.cardSections[0].main).not.toBe(upright.cardSections[0].main);
     // 역방향도 결정적이다
     expect(reversed).toEqual(generateReading({ ...base, reversedFlags: [true, false, false] }));
     // 금지 표현 없음
@@ -128,6 +149,8 @@ describe("generateReading — 통합", () => {
     expect(result.safety.action).toBe("block");
     expect(result.safety.message).toContain("109");
     expect(result.cardSections).toEqual([]);
+    expect(result.verdict).toBeNull();
+    expect(result.mbtiBriefing).toBeNull();
     expect(result.opening).toBe("");
   });
 
@@ -162,10 +185,14 @@ describe("generateReading — 통합", () => {
       });
       expect(result.cardSections, spreadId).toHaveLength(cardIds.length);
       expect(result.reflectionQuestions).toHaveLength(3);
+      expect(result.verdict!.text.trim(), spreadId).not.toBe("");
+      // choice에서만 기울기 존재
+      if (spreadId === "choice") expect(result.verdict!.choiceLean).toBeDefined();
+      else expect(result.verdict!.choiceLean).toBeUndefined();
     }
   });
 
-  it("78장 × 대표 유형 스모크 — 예외와 빈 문단이 없다", () => {
+  it("78장 × 대표 유형 스모크 — 예외와 빈 필드가 없다", () => {
     for (const card of ALL_CARDS) {
       const result = generateReading({
         topicId: "daily",
@@ -173,7 +200,12 @@ describe("generateReading — 통합", () => {
         mbti: "ISFJ",
         drawnCardIds: [card.id],
       });
-      expect(result.cardSections[0].paragraphs.every((p) => p.trim() !== ""), card.id).toBe(true);
+      const s = result.cardSections[0];
+      expect(s.intro.trim(), card.id).not.toBe("");
+      expect(s.main.trim(), card.id).not.toBe("");
+      expect(s.essence.trim(), card.id).not.toBe("");
+      expect(s.mbtiView, card.id).not.toBeNull();
+      expect(result.verdict!.text.trim(), card.id).not.toBe("");
     }
   });
 });

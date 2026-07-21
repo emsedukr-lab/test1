@@ -1,4 +1,5 @@
 import type { ToneRules } from "@/types/mbti";
+import type { InterpretationMode } from "@/types/reading";
 import type { Rng } from "../rng";
 import { UsedSentenceRegistry } from "./registry";
 
@@ -21,6 +22,8 @@ export interface TemplateVariant<C = TemplateContext> {
   /** 종결어미 그룹 — 직전 문장과 같은 그룹 회피용 */
   endingGroup: string;
   toneTags?: readonly ToneTag[];
+  /** 카드 위치 모드 우선 매칭 (soft filter) — 없으면 모든 모드에서 사용 */
+  modeTags?: readonly InterpretationMode[];
   render: (ctx: C) => string;
 }
 
@@ -31,9 +34,10 @@ function toneTagsOf(tone: ToneRules): Set<ToneTag> {
 /**
  * variant 선택 규칙 (결정적):
  * 1. 이 리딩에서 아직 안 쓴 variant 우선 (전부 썼으면 해제)
- * 2. toneFilter가 있으면 toneTags 교집합이 있는 variant 우선 (없으면 전체)
- * 3. 직전 endingGroup과 같은 그룹 제외 (전부 제외되면 해제)
- * 4. rng 순서로 순회하며 렌더 결과가 registry 중복이 아닌 첫 variant 채택
+ * 2. modeFilter가 있으면 modeTags가 일치하는 variant 우선 (없으면 전체)
+ * 3. toneFilter가 있으면 toneTags 교집합이 있는 variant 우선 (없으면 전체)
+ * 4. 직전 endingGroup과 같은 그룹 제외 (전부 제외되면 해제)
+ * 5. rng 순서로 순회하며 렌더 결과가 registry 중복이 아닌 첫 variant 채택
  */
 export function pickVariant<C>(
   pool: readonly TemplateVariant<C>[],
@@ -41,6 +45,7 @@ export function pickVariant<C>(
   rng: Rng,
   registry: UsedSentenceRegistry,
   toneFilter?: ToneRules | null,
+  modeFilter?: InterpretationMode,
 ): string {
   if (pool.length === 0) throw new Error("빈 템플릿 풀");
 
@@ -48,6 +53,11 @@ export function pickVariant<C>(
 
   const unused = candidates.filter((v) => !registry.isVariantUsed(v.id));
   if (unused.length > 0) candidates = unused;
+
+  if (modeFilter) {
+    const matched = candidates.filter((v) => v.modeTags?.includes(modeFilter));
+    if (matched.length > 0) candidates = matched;
+  }
 
   if (toneFilter) {
     const tags = toneTagsOf(toneFilter);

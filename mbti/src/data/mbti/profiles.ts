@@ -15,6 +15,8 @@ import type { MbtiProfile, MbtiType } from "@/types/mbti";
 export const MBTI_PROFILES = {
   INTJ: {
     type: "INTJ",
+    focus: "전략과 장기 방향",
+    actionFraming: "가설처럼 세워 검증하듯",
     group: "analyst",
     title: "조용한 전략가",
     summary: "멀리 내다보며 자신만의 전략을 세우는 데서 힘을 얻는 성향입니다.",
@@ -53,6 +55,8 @@ export const MBTI_PROFILES = {
   },
   INTP: {
     type: "INTP",
+    focus: "논리와 분석의 구조",
+    actionFraming: "분석의 마감선을 정해두고",
     group: "analyst",
     title: "사색하는 분석가",
     summary: "현상의 원리를 끝까지 파고들며 생각의 깊이를 즐기는 성향입니다.",
@@ -91,6 +95,8 @@ export const MBTI_PROFILES = {
   },
   ENTJ: {
     type: "ENTJ",
+    focus: "전략과 성취, 확장",
+    actionFraming: "위험과 지속 가능성을 짚어가며",
     group: "analyst",
     title: "대담한 지휘관",
     summary: "목표를 향해 사람과 자원을 움직이는 추진력이 돋보이는 성향입니다.",
@@ -129,6 +135,8 @@ export const MBTI_PROFILES = {
   },
   ENTP: {
     type: "ENTP",
+    focus: "대안과 가설의 탐색",
+    actionFraming: "가설 하나를 골라 검증하듯",
     group: "analyst",
     title: "재기발랄한 토론가",
     summary: "새로운 가능성과 대안을 탐색하며 아이디어를 주고받는 데서 에너지를 얻는 성향입니다.",
@@ -167,6 +175,8 @@ export const MBTI_PROFILES = {
   },
   INFJ: {
     type: "INFJ",
+    focus: "의미와 관계의 맥락",
+    actionFraming: "추측을 질문으로 바꿔",
     group: "diplomat",
     title: "통찰하는 조언자",
     summary: "사람과 상황의 이면에 담긴 의미를 깊이 읽어내는 성향입니다.",
@@ -205,6 +215,8 @@ export const MBTI_PROFILES = {
   },
   INFP: {
     type: "INFP",
+    focus: "내적 가치와 가능성",
+    actionFraming: "확신이 서기 전에 작게",
     group: "diplomat",
     title: "이상을 품은 중재자",
     summary: "자신만의 가치와 이상을 나침반 삼아 조용히 나아가는 성향입니다.",
@@ -243,6 +255,8 @@ export const MBTI_PROFILES = {
   },
   ENFJ: {
     type: "ENFJ",
+    focus: "관계의 성장과 영향",
+    actionFraming: "내 몫과 상대의 몫을 나눠",
     group: "diplomat",
     title: "따뜻한 성장 조력자",
     summary: "주변 사람의 성장을 도우며 관계 속에서 의미를 찾는 성향입니다.",
@@ -281,6 +295,8 @@ export const MBTI_PROFILES = {
   },
   ENFP: {
     type: "ENFP",
+    focus: "가능성과 의미, 변화",
+    actionFraming: "선택지를 줄인 뒤 곧바로",
     group: "diplomat",
     title: "열정적인 영감가",
     summary: "새로운 가능성과 사람에게서 영감을 얻으며 변화를 즐기는 성향입니다.",
@@ -319,6 +335,8 @@ export const MBTI_PROFILES = {
   },
   ISTJ: {
     type: "ISTJ",
+    focus: "사실과 경험, 책임의 범위",
+    actionFraming: "체크리스트로 쪼개 단계대로",
     group: "sentinel",
     title: "믿음직한 실무가",
     summary: "검증된 경험과 사실을 바탕으로 맡은 일을 끝까지 해내는 성향입니다.",
@@ -357,6 +375,8 @@ export const MBTI_PROFILES = {
   },
   ISFJ: {
     type: "ISFJ",
+    focus: "관계의 안정과 배려의 균형",
+    actionFraming: "내 필요부터 확인하며 차근차근",
     group: "sentinel",
     title: "헌신적인 수호자",
     summary: "가까운 사람들을 세심하게 챙기며 안정적인 일상을 지켜가는 성향입니다.",
@@ -395,6 +415,8 @@ export const MBTI_PROFILES = {
   },
   ESTJ: {
     type: "ESTJ",
+    focus: "목표와 효율, 책임",
+    actionFraming: "통제할 수 있는 것부터 골라",
     group: "sentinel",
     title: "실용적인 조직가",
     summary: "체계와 효율로 일과 사람을 정돈하며 목표를 완수하는 성향입니다.",
@@ -433,6 +455,8 @@ export const MBTI_PROFILES = {
   },
   ESFJ: {
     type: "ESFJ",
+    focus: "관계의 조화와 역할",
+    actionFraming: "주고받음의 균형을 확인하며",
     group: "sentinel",
     title: "다정한 조율가",
     summary: "주변의 조화를 살피고 사람들을 연결하며 힘을 얻는 성향입니다.",
@@ -471,6 +495,8 @@ export const MBTI_PROFILES = {
   },
   ISTP: {
     type: "ISTP",
+    focus: "구조와 원인, 실용성",
+    actionFraming: "작은 실험처럼 가볍게",
     group: "explorer",
     title: "침착한 장인",
     summary: "문제의 구조를 파악하고 직접 손을 움직여 해결하는 데 능한 성향입니다.",
@@ -509,6 +535,8 @@ export const MBTI_PROFILES = {
   },
   ISFP: {
     type: "ISFP",
+    focus: "지금의 감정과 가치",
+    actionFraming: "부담이 작은 것부터 천천히",
     group: "explorer",
     title: "조용한 감성가",
     summary: "지금 이 순간의 감정과 아름다움을 자신만의 방식으로 음미하는 성향입니다.",
@@ -547,6 +575,8 @@ export const MBTI_PROFILES = {
   },
   ESTP: {
     type: "ESTP",
+    focus: "눈앞의 현실과 기회",
+    actionFraming: "결과를 한 번 가늠해보고",
     group: "explorer",
     title: "활동적인 해결사",
     summary: "지금 눈앞의 상황에 빠르게 반응하며 기회를 붙잡는 성향입니다.",
@@ -585,6 +615,8 @@ export const MBTI_PROFILES = {
   },
   ESFP: {
     type: "ESFP",
+    focus: "지금의 감정과 관계",
+    actionFraming: "순간의 마음과 오래갈 마음을 나눠",
     group: "explorer",
     title: "유쾌한 분위기 메이커",
     summary: "지금 이 순간의 즐거움을 사람들과 나누며 빛나는 성향입니다.",

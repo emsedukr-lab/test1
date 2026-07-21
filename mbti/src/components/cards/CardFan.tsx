@@ -170,12 +170,10 @@ export function CardFan({ deckSize, selectedIndices, requiredCount, onToggle }: 
   const arcDrop = layout.radius * (1 - Math.cos((layout.maxAngle * Math.PI) / 180));
   const rowHeight = arcDrop + layout.cardH + 8;
 
-  let deckOffset = 0;
-  const rows = layout.rows.map((count) => {
-    const start = deckOffset;
-    deckOffset += count;
-    return { start, count };
-  });
+  const rows = layout.rows.map((count, rowIdx) => ({
+    start: layout.rows.slice(0, rowIdx).reduce((sum, n) => sum + n, 0),
+    count,
+  }));
 
   return (
     <div className="overflow-x-clip">

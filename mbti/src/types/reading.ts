@@ -88,8 +88,54 @@ export interface CardReadingSection {
   reversed: boolean;
   /** UI 제목 — 예: '현재 상황 — 컵 3' */
   headline: string;
-  /** 조립된 본문 1~2문단 */
-  paragraphs: readonly string[];
+  /** 대표 키워드 (칩 렌더용) */
+  keyword: string;
+  /** 핵심 한 줄 — 명사구 결론. 예: '속도 조절 — 점검이 필요한 지점' */
+  essence: string;
+  /** 위치 프레임 1문장 */
+  intro: string;
+  /** 의미 본문 (정방향 최대 2문장, 역방향 최대 3문장) */
+  main: string;
+  /** 'MBTI의 시선' 라벨 블록 본문 (MBTI 미선택 시 null) */
+  mbtiView: string | null;
+}
+
+/** 선택 리딩의 기울기 — 카드 극성 점수 기반 (운명 판정이 아니라 카드 성격의 합산) */
+export interface ChoiceLean {
+  lean: "A" | "B" | "even";
+  scoreA: number;
+  scoreB: number;
+  /** 기울기의 근거 1~2문장 (동점이면 판단 기준 안내) */
+  reason: string;
+}
+
+/** 한 줄 대답 — 주어는 항상 '카드' */
+export interface ReadingVerdict {
+  text: string;
+  /** 히어로 칩용 — 카드 순서대로의 대표 키워드 */
+  keywords: readonly string[];
+  /** '지금 할 일 1가지' — actions[0] (없으면 null) */
+  firstStep: string | null;
+  /** choice 스프레드에서만 존재 */
+  choiceLean?: ChoiceLean;
+}
+
+/** 유형 브리핑 — MBTI 맞춤 해석의 중심 블록 */
+export interface MbtiBriefing {
+  type: MbtiType;
+  /** 별칭 — profile.title */
+  title: string;
+  /** 이 유형이 이 주제를 대하는 방식 */
+  approach: string;
+  /** 이번 배열에서 특히 주목할 카드 (결정적 매칭 산식으로 선정) */
+  focusCard: {
+    cardId: string;
+    cardNameKo: string;
+    positionTitle: string;
+    reason: string;
+  };
+  /** 유형별 함정 1개 */
+  pitfall: string;
 }
 
 export type CombinationKind =
@@ -122,10 +168,11 @@ export interface ReadingResult {
     seed: number;
   };
   safety: SafetyCheckResult;
-  /** safety.action === 'block'이면 아래 필드는 모두 비어 있음 */
+  /** safety.action === 'block'이면 null·빈 값 */
+  verdict: ReadingVerdict | null;
   opening: string;
-  /** MBTI 연결 문단 (미선택 시 null) */
-  mbtiLens: string | null;
+  /** 유형 브리핑 (MBTI 미선택 시 null) */
+  mbtiBriefing: MbtiBriefing | null;
   cardSections: readonly CardReadingSection[];
   /** 최대 2개 */
   combinationInsights: readonly CombinationInsight[];
@@ -133,6 +180,8 @@ export interface ReadingResult {
   strengthsHighlight: readonly string[];
   /** 최대 2개 */
   cautionsHighlight: readonly string[];
+  /** 행동 리스트 인트로 — 유형의 행동 방식 프레이밍 (MBTI 미선택 시 null) */
+  actionsIntro: string | null;
   /** 최대 3개 */
   actions: readonly string[];
   /** 정확히 3개 */

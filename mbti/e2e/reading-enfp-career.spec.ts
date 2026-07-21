@@ -16,7 +16,9 @@ test("ENFP · 커리어 · 세 장 리딩 → 결과 확인 → 저장", async (
   await expect(page.getByRole("heading", { name: "카드별 해석" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "이번 주에 해볼 수 있는 것" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "스스로에게 물어보세요" })).toBeVisible();
-  await expect(page.getByText("ENFP 성향으로 본 이번 리딩")).toBeVisible();
+  await expect(page.getByText(/ENFP 유형 브리핑/)).toBeVisible();
+  await expect(page.getByText("ENFP의 시선")).toHaveCount(3);
+  await expect(page.getByText("지금 할 일 한 가지")).toBeVisible();
 
   // 카드 섹션 3개
   await expect(page.locator("article")).toHaveCount(3);

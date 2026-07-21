@@ -37,7 +37,7 @@ async function main() {
     }
     const texts = [
       p.title, p.summary, p.perceptionStyle, p.decisionStyle, p.relationshipStyle,
-      p.effectiveAdviceStyle,
+      p.effectiveAdviceStyle, p.focus, p.actionFraming,
       ...p.stressPatterns, ...p.strengths, ...p.overusePatterns,
       ...p.actionPreferences, ...p.balancingPerspectives,
     ];

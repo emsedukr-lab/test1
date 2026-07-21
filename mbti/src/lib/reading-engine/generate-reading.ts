@@ -1,12 +1,13 @@
 import { getProfile } from "@/data/mbti";
 import type { ReadingInput, ReadingResult } from "@/types/reading";
-import { applyMbtiProfile, buildMbtiLens, planBridgeSlots } from "./apply-mbti-profile";
+import { applyMbtiView, buildActionsIntro, buildMbtiBriefing } from "./apply-mbti-profile";
 import { applyPositionContext } from "./apply-position-context";
 import { analyzeCardCombination } from "./analyze-combination";
 import { assembleReading } from "./compose/assemble";
 import { UsedSentenceRegistry } from "./compose/registry";
 import { generateActions } from "./generate-actions";
 import { generateReflectionQuestions } from "./generate-reflection-questions";
+import { generateVerdict } from "./generate-verdict";
 import { createRng, seedOf } from "./rng";
 import { checkQuestionSafety } from "./safety-filter";
 import { selectCardMeaning } from "./select-card-meaning";
@@ -22,6 +23,8 @@ export class ReadingInputError extends Error {
 /**
  * 리딩 생성 파이프라인 (결정적 — 같은 입력이면 같은 결과).
  * 질문 텍스트는 안전 검사에만 쓰이고 시드·본문 생성에는 관여하지 않는다.
+ * rng 소비 순서 고정: meanings → sections(+mbtiView) → verdict → briefing
+ *                  → combos → actions → actionsIntro → questions → assemble
  */
 export function generateReading(input: ReadingInput): ReadingResult {
   const validation = validateReadingInput(input);
@@ -51,12 +54,14 @@ export function generateReading(input: ReadingInput): ReadingResult {
         seed,
       },
       safety,
+      verdict: null,
       opening: "",
-      mbtiLens: null,
+      mbtiBriefing: null,
       cardSections: [],
       combinationInsights: [],
       strengthsHighlight: [],
       cautionsHighlight: [],
+      actionsIntro: null,
       actions: [],
       reflectionQuestions: [],
       closing: "",
@@ -67,9 +72,9 @@ export function generateReading(input: ReadingInput): ReadingResult {
   const registry = new UsedSentenceRegistry();
   const profile = getProfile(input.mbti);
 
-  // 카드별 해석
-  const bridgeSlots = planBridgeSlots(spread, profile);
+  // 카드별 해석 — 모든 카드에 MBTI 시선 블록
   const meanings = cards.map((card) => selectCardMeaning(card, topic, rng));
+  let prevEssenceId: string | null = null;
   const sections = cards.map((card, i) => {
     const positioned = applyPositionContext({
       card,
@@ -80,22 +85,40 @@ export function generateReading(input: ReadingInput): ReadingResult {
       rng,
       registry,
       toneRules: profile?.toneRules ?? null,
+      prevEssenceId,
     });
-    return applyMbtiProfile({
-      positioned,
+    prevEssenceId = positioned.essenceId;
+    const mbtiView = applyMbtiView({
       card,
       keyword: meanings[i].keyword,
       profile,
-      hasBridgeSlot: bridgeSlots.has(spread.positions[i].index),
+      position: spread.positions[i],
       topic,
       rng,
       registry,
     });
+    return { ...positioned, mbtiView };
   });
 
-  const mbtiLens = profile ? buildMbtiLens(profile, topic, rng, registry) : null;
+  const keywords = meanings.map((m) => m.keyword);
+
+  const verdictCore = generateVerdict({
+    topic,
+    spread,
+    cards,
+    keywords,
+    reversedFlags,
+    rng,
+    registry,
+  });
+
+  const mbtiBriefing = profile
+    ? buildMbtiBriefing({ profile, topic, spread, cards, keywords, reversedFlags, rng, registry })
+    : null;
+
   const combos = analyzeCardCombination(cards, spread, topic, rng);
   const actions = generateActions({ cards, spread, topic, profile, registry });
+  const actionsIntro = profile ? buildActionsIntro(profile, rng, registry) : null;
   const questions = generateReflectionQuestions({ cards, spread, topic, registry });
 
   return assembleReading({
@@ -103,11 +126,13 @@ export function generateReading(input: ReadingInput): ReadingResult {
     spread,
     profile,
     safety,
-    mbtiLens,
+    verdictCore,
+    mbtiBriefing,
     sections,
     cards,
-    keywords: meanings.map((m) => m.keyword),
+    keywords,
     combos,
+    actionsIntro,
     actions,
     questions,
     rng,

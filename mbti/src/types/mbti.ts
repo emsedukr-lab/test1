@@ -39,6 +39,10 @@ export interface MbtiProfile {
   overusePatterns: readonly string[];
   /** 이 유형에게 잘 맞는 조언 방식 설명 (완결문) */
   effectiveAdviceStyle: string;
+  /** 해석 초점 명사구 — 브리핑·주목 카드 사유문에 삽입. 예: '전략과 장기 방향' */
+  focus: string;
+  /** 행동 제안 방식 부사구 — 행동 리스트 인트로에 삽입. 예: '가설처럼 세워 검증하듯' */
+  actionFraming: string;
   /** 행동조언 rerank용 매칭 키워드: '기록', '대화', '계획' 등 */
   actionPreferences: readonly string[];
   /** 2개 이상, 보완 관점 완결문 */

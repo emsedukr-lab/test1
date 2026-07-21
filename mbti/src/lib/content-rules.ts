@@ -43,3 +43,15 @@ export const MEANING_LENGTH = { min: 30, max: 160 } as const;
 export function findForbidden(text: string): string[] {
   return FORBIDDEN_EXPRESSIONS.filter((expr) => text.includes(expr));
 }
+
+/**
+ * verdict·essence 전용 — 한 문장 안에서 헤지 표현이 두 번 이상 겹치는 것을 검출.
+ * "~일 수도 있을 것 같습니다"류의 이중 헤지가 대답을 흐리는 것을 막는다.
+ */
+export const DOUBLE_HEDGE_PATTERNS: readonly RegExp[] = [
+  /(수 있|보입니다|모릅니다|것 같)[^.?!]*(수 있|보입니|모릅니|것 같)/,
+];
+
+export function hasDoubleHedge(text: string): boolean {
+  return DOUBLE_HEDGE_PATTERNS.some((p) => p.test(text));
+}

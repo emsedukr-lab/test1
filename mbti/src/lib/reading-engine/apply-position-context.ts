@@ -1,21 +1,32 @@
+import { ESSENCES } from "@/data/templates/essences";
 import { POSITION_FRAMES } from "@/data/templates/position-frames";
 import { RECOVERY_FRAMES, REVERSAL_FRAMES } from "@/data/templates/reversal-frames";
 import type { ToneRules } from "@/types/mbti";
 import type { SpreadPosition, Topic } from "@/types/reading";
 import type { TarotCard } from "@/types/tarot";
-import { josa } from "./compose/josa";
 import { pickVariant, type TemplateContext } from "./compose/sentence-bank";
 import type { UsedSentenceRegistry } from "./compose/registry";
 import type { Rng } from "./rng";
 import type { SelectedMeaning } from "./select-card-meaning";
 
 export interface PositionedMeaning {
-  /** 위치 프레임 문장 (variant 풀에서 시드 선택) */
-  frame: string;
-  /** primary 의미 완결문 */
-  body: string;
-  /** mode별 보강 문장 */
-  modifier: string;
+  /** 위치 프레임 1문장 */
+  intro: string;
+  /** 의미 본문 — 정방향 최대 2문장, 역방향 최대 3문장(그림자+회복) */
+  main: string;
+  /** 핵심 한 줄 명사구 */
+  essence: string;
+  /** 직전 카드와 essence variant 중복 회피용 */
+  essenceId: string;
+}
+
+/** 구두점 기준 첫 문장만 (결정적) */
+function firstSentence(text: string): string {
+  return text.split(/(?<=[.?!])\s+/)[0];
+}
+
+function sentenceCount(text: string): number {
+  return text.split(/(?<=[.?!])\s+/).filter((s) => s.trim() !== "").length;
 }
 
 export function applyPositionContext(args: {
@@ -27,8 +38,11 @@ export function applyPositionContext(args: {
   rng: Rng;
   registry: UsedSentenceRegistry;
   toneRules?: ToneRules | null;
+  /** 직전 카드의 essence variant id (반복 회피) */
+  prevEssenceId?: string | null;
 }): PositionedMeaning {
-  const { card, meaning, position, topic, reversed, rng, registry, toneRules } = args;
+  const { card, meaning, position, topic, reversed, rng, registry, toneRules, prevEssenceId } =
+    args;
 
   const ctx: TemplateContext = {
     cardNameKo: card.nameKo,
@@ -39,39 +53,39 @@ export function applyPositionContext(args: {
     roleDescription: position.roleDescription,
   };
 
-  // 역방향: 에너지의 부족/과잉/내면화/막힘 프레임 + 그림자 의미,
-  // 이어서 본래 에너지(빛의 의미)를 회복 관점으로 제시한다.
+  // essence — registry 비등록, 직전 카드와 같은 variant 회피
+  const essencePool = reversed ? ESSENCES.reversed : ESSENCES[position.interpretationMode];
+  let essenceIdx = rng.int(essencePool.length);
+  if (essencePool[essenceIdx].id === prevEssenceId) {
+    essenceIdx = (essenceIdx + 1) % essencePool.length;
+  }
+  const essenceVariant = essencePool[essenceIdx];
+  const essence = essenceVariant.render(meaning.keyword);
+
   if (reversed) {
+    // 역방향: 프레임(부족/과잉/내면화/막힘) → 그림자 의미 → 회복 방향(본래의 빛)
     const frame = pickVariant(REVERSAL_FRAMES, ctx, rng, registry, toneRules);
-    const recovery = pickVariant(RECOVERY_FRAMES, ctx, rng, registry, toneRules);
-    return {
-      frame,
-      body: meaning.shadow,
-      modifier: `${recovery} ${meaning.light}`,
-    };
+    const intro = firstSentence(frame);
+    let main = meaning.shadow;
+    if (sentenceCount(meaning.shadow) <= 1) {
+      const recovery = firstSentence(pickVariant(RECOVERY_FRAMES, ctx, rng, registry, toneRules));
+      main = `${meaning.shadow} ${recovery} ${firstSentence(meaning.light)}`;
+    }
+    return { intro, main, essence, essenceId: essenceVariant.id };
   }
 
-  const frame = pickVariant(POSITION_FRAMES[position.interpretationMode], ctx, rng, registry, toneRules);
+  const frame = pickVariant(
+    POSITION_FRAMES[position.interpretationMode],
+    ctx,
+    rng,
+    registry,
+    toneRules,
+  );
 
-  let modifier: string;
-  switch (position.interpretationMode) {
-    case "light": {
-      const strength = rng.pick(card.strengths);
-      modifier = `이 자리에서 기댈 수 있는 것은 ${josa(strength, "이/가")} 아닐까요. 그 힘을 의식적으로 꺼내 쓸수록 흐름이 부드러워질 수 있습니다.`;
-      break;
-    }
-    case "caution": {
-      // 그림자 의미는 데이터의 완결문을 그대로 쓴다
-      modifier = meaning.shadow;
-      break;
-    }
-    case "action": {
-      const action = rng.pick(card.suggestedActions);
-      modifier = `우선 이렇게 시도해볼 수 있습니다. ${action}`;
-      registry.add(action);
-      break;
-    }
-  }
-
-  return { frame, body: meaning.primary, modifier };
+  return {
+    intro: firstSentence(frame),
+    main: meaning.primary,
+    essence,
+    essenceId: essenceVariant.id,
+  };
 }

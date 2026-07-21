@@ -4,13 +4,15 @@ import type { MbtiProfile } from "@/types/mbti";
 import type {
   CardReadingSection,
   CombinationInsight,
+  MbtiBriefing,
   ReadingResult,
+  ReadingVerdict,
   SafetyCheckResult,
   Spread,
   Topic,
 } from "@/types/reading";
 import type { TarotCard } from "@/types/tarot";
-import type { MbtiAdjustedSection } from "../apply-mbti-profile";
+import type { PositionedMeaning } from "../apply-position-context";
 import type { Rng } from "../rng";
 import { dedupeSentences } from "./dedupe";
 import type { UsedSentenceRegistry } from "./registry";
@@ -47,11 +49,13 @@ export function assembleReading(parts: {
   spread: Spread;
   profile: MbtiProfile | null;
   safety: SafetyCheckResult;
-  mbtiLens: string | null;
-  sections: readonly MbtiAdjustedSection[];
+  verdictCore: Omit<ReadingVerdict, "firstStep">;
+  mbtiBriefing: MbtiBriefing | null;
+  sections: readonly (PositionedMeaning & { mbtiView: string | null })[];
   cards: readonly TarotCard[];
   keywords: readonly string[];
   combos: readonly CombinationInsight[];
+  actionsIntro: string | null;
   actions: readonly string[];
   questions: readonly string[];
   rng: Rng;
@@ -65,11 +69,13 @@ export function assembleReading(parts: {
     topic,
     spread,
     safety,
-    mbtiLens,
+    verdictCore,
+    mbtiBriefing,
     sections,
     cards,
     keywords,
     combos,
+    actionsIntro,
     actions,
     questions,
     rng,
@@ -93,7 +99,6 @@ export function assembleReading(parts: {
     const card = cards[i];
     const position = spread.positions[i];
     const reversed = reversedFlags[i];
-    const para2 = section.bridge ? `${section.modifier} ${section.bridge}` : section.modifier;
     return {
       cardId: card.id,
       cardNameKo: card.nameKo,
@@ -101,7 +106,11 @@ export function assembleReading(parts: {
       mode: position.interpretationMode,
       reversed,
       headline: `${position.titleKo} — ${card.nameKo}${reversed ? " (역방향)" : ""}`,
-      paragraphs: [`${section.frame} ${section.body}`, para2],
+      keyword: keywords[i],
+      essence: section.essence,
+      intro: section.intro,
+      main: section.main,
+      mbtiView: section.mbtiView,
     };
   });
 
@@ -115,12 +124,14 @@ export function assembleReading(parts: {
   return {
     meta: { topicId: topic.id, spreadId: spread.id, mbti, cardIds, reversedFlags, seed },
     safety,
+    verdict: { ...verdictCore, firstStep: actions[0] ?? null },
     opening,
-    mbtiLens,
+    mbtiBriefing,
     cardSections,
     combinationInsights: combos,
     strengthsHighlight: pickHighlights(cards, spread, topic, "strengths", "light"),
     cautionsHighlight: pickHighlights(cards, spread, topic, "cautions", "caution"),
+    actionsIntro,
     actions,
     reflectionQuestions: questions,
     closing,
